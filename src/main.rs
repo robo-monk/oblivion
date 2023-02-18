@@ -1,12 +1,13 @@
 extern crate termion;
 use std::io::{stdin, stdout, Write};
+use oblivion::renderer::TermionRenderer;
 use termion::cursor::BlinkingBlock;
 use termion::event::Key;
 use termion::input::TermRead;
 use termion::raw::IntoRawMode;
 use termion::{clear, color, cursor, style, terminal_size};
 
-use oblivion::{Buffer, Editor, InsertMode, Mode, NormalMode, VisualMode};
+use oblivion::{Buffer, Editor, InsertMode, Mode, NormalMode, VisualMode, Renderer};
 
 fn main() {
     let stdin = stdin();
@@ -32,8 +33,11 @@ fn main() {
     let mut current_col = 1;
 
     // let editor = Editor::new();
-    let buffer = Buffer::new(String::from("./src/main.rs"));
-    println!("{:?}", buffer);
+// terminal_size().unwrap()
+    let buffer = Buffer::new(String::from("./src/main.rs"), Renderer::Terminal(
+        TermionRenderer::new(terminal_size().unwrap())
+    ));
+    // println!("{:?}", buffer);
 
     // write!(stdout, "{}", cursor::BlinkingBlock);
 

@@ -5,7 +5,7 @@
 
 use crate::Buffer;
 
-#[derive(Debug)]
+// #[derive(Debug)]
 pub struct Editor {
     buffers: Vec<Buffer>,
     active_buffer: Option<usize>
