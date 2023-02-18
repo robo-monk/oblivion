@@ -1,5 +1,5 @@
 extern crate termion;
-use termion::{color, style, cursor, clear};
+use termion::{color, style, cursor, clear, terminal_size};
 
 use termion::raw::IntoRawMode;
 use termion::input::TermRead;
@@ -16,6 +16,8 @@ fn main() {
 
     // write!(stdout, "{}{}Hey there!", color::Fg(color::Red), cursor::Goto(1,1)).unwrap();
 
+    let (max_width, max_height) = terminal_size().unwrap();
+
     write!(stdout,
         "{}{}q to exit. Type stuff, use alt, and so on...{}",
         termion::clear::All,
@@ -25,13 +27,27 @@ fn main() {
 
     stdout.flush().unwrap();
 
-    for k in stdin.keys() {
-        write!(stdout, "{}{}", cursor::Goto(1, 1), clear::CurrentLine).unwrap();
+    let mut content = String::new();
+    let mut current_row = 1;
+    let mut current_col = 1;
 
+    for k in stdin.keys() {
         match k.unwrap() {
             Key::Char('q') => break,
             Key::Char(c) => {
-                write!(stdout, "{}", c);
+
+                current_row += 1;
+                if current_row >= max_width {
+                    current_row = 1;
+                    current_col += 1;
+                }
+
+                write!(
+                    stdout,
+                    "{}{}",
+                    cursor::Goto(current_row, current_col),
+                    c
+                );
                 stdout.flush().unwrap();
             },
             _ => {}
