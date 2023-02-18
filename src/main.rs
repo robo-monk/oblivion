@@ -1,13 +1,21 @@
 extern crate termion;
 use termion::{color, style, cursor, clear, terminal_size};
-
+use termion::cursor::BlinkingBlock;
 use termion::raw::IntoRawMode;
 use termion::input::TermRead;
 use termion::event::Key;
-// use termion::raw::TermRead;
-// TermRead
-
 use std::io::{Write, stdout, stdin};
+
+enum Mode {
+    Normal, Input, Visual
+}
+
+struct Buffer {
+    mode: Mode,
+    content: String,
+    current_row: u32,
+    current_col: u32,
+}
 
 
 fn main() {
@@ -22,7 +30,7 @@ fn main() {
         "{}{}q to exit. Type stuff, use alt, and so on...{}",
         termion::clear::All,
         cursor::Goto(1, 1),
-        cursor::Hide
+        cursor::BlinkingBlock
     ).unwrap();
 
     stdout.flush().unwrap();
@@ -31,32 +39,38 @@ fn main() {
     let mut current_row = 1;
     let mut current_col = 1;
 
+    // write!(stdout, "{}", cursor::BlinkingBlock);
+
     for k in stdin.keys() {
         match k.unwrap() {
             Key::Char('q') => break,
             Key::Char(c) => {
-
                 current_row += 1;
                 if current_row >= max_width {
                     current_row = 1;
                     current_col += 1;
                 }
 
+                // println!("{}", c);
+
                 write!(
                     stdout,
-                    "{}{}",
+                    "{}{}{}",
                     cursor::Goto(current_row, current_col),
-                    c
+                    c,
+                    cursor::BlinkingBlock
                 );
-                stdout.flush().unwrap();
+                // stdout.flush().unwrap();
             },
             _ => {}
         }
 
-        // stdout.flush().unwrap();
+
+        write!(stdout, "{}", termion::cursor::BlinkingBlock).unwrap();
+        stdout.flush().unwrap();
     }
 
-    write!(stdout, "{}", termion::cursor::Show).unwrap();
+    write!(stdout, "{}", termion::cursor::BlinkingBlock).unwrap();
 
     //println!("{}Red", color::Fg(color::Red));
     //println!("{}{} yo !", termion::clear::All, termion::cursor::Goto(1, 1));
