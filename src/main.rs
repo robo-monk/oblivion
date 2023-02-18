@@ -1,22 +1,12 @@
 extern crate termion;
-use termion::{color, style, cursor, clear, terminal_size};
+use std::io::{stdin, stdout, Write};
 use termion::cursor::BlinkingBlock;
-use termion::raw::IntoRawMode;
-use termion::input::TermRead;
 use termion::event::Key;
-use std::io::{Write, stdout, stdin};
+use termion::input::TermRead;
+use termion::raw::IntoRawMode;
+use termion::{clear, color, cursor, style, terminal_size};
 
-enum Mode {
-    Normal, Input, Visual
-}
-
-struct Buffer {
-    mode: Mode,
-    content: String,
-    current_row: u32,
-    current_col: u32,
-}
-
+use oblivion::{Buffer, Editor, InsertMode, Mode, NormalMode, VisualMode};
 
 fn main() {
     let stdin = stdin();
@@ -26,18 +16,24 @@ fn main() {
 
     let (max_width, max_height) = terminal_size().unwrap();
 
-    write!(stdout,
+    write!(
+        stdout,
         "{}{}q to exit. Type stuff, use alt, and so on...{}",
         termion::clear::All,
         cursor::Goto(1, 1),
         cursor::BlinkingBlock
-    ).unwrap();
+    )
+    .unwrap();
 
     stdout.flush().unwrap();
 
     let mut content = String::new();
     let mut current_row = 1;
     let mut current_col = 1;
+
+    // let editor = Editor::new();
+    let buffer = Buffer::new(String::from("./src/main.rs"));
+    println!("{:?}", buffer);
 
     // write!(stdout, "{}", cursor::BlinkingBlock);
 
@@ -61,10 +57,9 @@ fn main() {
                     cursor::BlinkingBlock
                 );
                 // stdout.flush().unwrap();
-            },
+            }
             _ => {}
         }
-
 
         write!(stdout, "{}", termion::cursor::BlinkingBlock).unwrap();
         stdout.flush().unwrap();
@@ -75,5 +70,3 @@ fn main() {
     //println!("{}Red", color::Fg(color::Red));
     //println!("{}{} yo !", termion::clear::All, termion::cursor::Goto(1, 1));
 }
-
-
