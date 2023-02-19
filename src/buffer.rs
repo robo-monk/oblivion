@@ -43,7 +43,7 @@ impl BufferInterface for Buffer<'_> {
         }
 
         // println!("{c}");
-        self.renderer.write(c);
+        self.renderer.write(c, self.index);
         self.renderer.flush();
     }
 
