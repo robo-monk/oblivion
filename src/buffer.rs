@@ -12,13 +12,13 @@ pub struct Buffer<'a> {
     contents: String,
     modified: bool,
 
-    renderer: &'a dyn RendererInterface,
+    renderer: &'a mut dyn RendererInterface,
     index: u32, // width: u16,
                 // height: u16,
 }
 
 impl Buffer<'_> {
-    pub fn new(filename: String, renderer: &dyn RendererInterface) -> Buffer {
+    pub fn new(filename: String, renderer: &mut dyn RendererInterface) -> Buffer {
         let contents = fs::read_to_string(filename.to_owned()).expect("Unable to read file");
         // let test = Box::new(renderer);
 
@@ -41,5 +41,13 @@ impl BufferInterface for Buffer<'_> {
         if !self.modified {
             self.modified = true;
         }
+
+        // println!("{c}");
+        self.renderer.write(c);
+        self.renderer.flush();
     }
+
+    // fn getRenderer(&mut self) -> &dyn RendererInterface {
+    //     return self.renderer;
+    // }
 }

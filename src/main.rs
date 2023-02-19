@@ -11,22 +11,22 @@ use oblivion::{Buffer, Editor, InsertMode, Mode, NormalMode, VisualMode, Rendere
 
 fn main() {
     let stdin = stdin();
-    let mut stdout = stdout().into_raw_mode().unwrap();
+    // let mut stdout = stdout().into_raw_mode().unwrap();
 
     // write!(stdout, "{}{}Hey there!", color::Fg(color::Red), cursor::Goto(1,1)).unwrap();
 
-    let (max_width, max_height) = terminal_size().unwrap();
+    // let (max_width, max_height) = terminal_size().unwrap();
 
-    write!(
-        stdout,
-        "{}{}q to exit. Type stuff, use alt, and so on...{}",
-        termion::clear::All,
-        cursor::Goto(1, 1),
-        cursor::BlinkingBlock
-    )
-    .unwrap();
+    // write!(
+    //     stdout,
+    //     "{}{}q to exit. Type stuff, use alt, and so on...{}",
+    //     termion::clear::All,
+    //     cursor::Goto(1, 1),
+    //     cursor::BlinkingBlock
+    // )
+    // .unwrap();
 
-    stdout.flush().unwrap();
+    // stdout.flush().unwrap();
 
     let mut content = String::new();
     let mut current_row = 1;
@@ -38,11 +38,11 @@ fn main() {
     //     TermionRenderer::new(terminal_size().unwrap())
     // );
 
-    let renderer = TermionRenderer::new(terminal_size().unwrap());
+    let mut renderer = TermionRenderer::new(terminal_size().unwrap());
     // renderer;
     // let mut buffer = Buffer::new(String::from("./src/main.rs"), Renderer::Terminal(renderer));
     // let mut buffer = Buffer::new(String::from("./src/main.rs"), Renderer::Terminal(renderer));
-    let mut buffer = Buffer::new(String::from("./src/main.rs"), &renderer);
+    let mut buffer = Buffer::new(String::from("./src/main.rs"), &mut renderer);
     // println!("{:?}", buffer);
 
     // write!(stdout, "{}", cursor::BlinkingBlock);
@@ -75,11 +75,11 @@ fn main() {
             _ => {}
         }
 
-        write!(stdout, "{}", termion::cursor::BlinkingBlock).unwrap();
-        stdout.flush().unwrap();
+        // write!(stdout, "{}", termion::cursor::BlinkingBlock).unwrap();
+        // stdout.flush().unwrap();
     }
 
-    write!(stdout, "{}", termion::cursor::BlinkingBlock).unwrap();
+    // write!(stdout, "{}", termion::cursor::BlinkingBlock).unwrap();
 
     //println!("{}Red", color::Fg(color::Red));
     //println!("{}{} yo !", termion::clear::All, termion::cursor::Goto(1, 1));

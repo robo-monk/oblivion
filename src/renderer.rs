@@ -52,7 +52,7 @@ impl TermionRenderer {
 
         write!(
             stdout,
-            "{}{}q to exit. Type stuff, use alt, and so on...{}",
+            "{}{}qq to exit. Type stuff, use alt, and so on...{}",
             clear::All,
             cursor::Goto(1, 1),
             cursor::BlinkingBlock
