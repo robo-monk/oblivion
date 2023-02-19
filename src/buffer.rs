@@ -22,18 +22,36 @@ impl Buffer<'_> {
         let contents = fs::read_to_string(filename.to_owned()).expect("Unable to read file");
         // let test = Box::new(renderer);
 
-        Buffer {
+        let mut buffer = Buffer {
             filename,
             contents,
             modified: false,
             renderer,
             index: 0, // width,
                       // height,
-        }
+        };
+
+        buffer.dumpf();
+        buffer
+    }
+
+    // TEST stuff
+    pub fn go(&mut self) {
+        self.index -= 1;
+        self.renderer.goto(self.index);
+        self.renderer.flush();
+    }
+
+    pub fn dumpf(&mut self) {
+        self.renderer.clear();
+        self.renderer.write_string(&self.contents, 0);
     }
 }
 
 impl BufferInterface for Buffer<'_> {
+    // fn new_line(&mut self) {
+    // }
+
     fn append(&mut self, c: char) {
         // self.contents += c;
         self.contents.push(c);

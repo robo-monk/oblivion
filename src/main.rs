@@ -33,7 +33,7 @@ fn main() {
     let mut current_col = 1;
 
     // let editor = Editor::new();
-// terminal_size().unwrap()
+    // terminal_size().unwrap()
     // let renderer = Renderer::Terminal(
     //     TermionRenderer::new(terminal_size().unwrap())
     // );
@@ -50,6 +50,16 @@ fn main() {
     for k in stdin.keys() {
         match k.unwrap() {
             Key::Char('q') => break,
+            Key::Char('j') => {
+                // buffer.
+                buffer.go();
+            },
+            Key::Char('d') => {
+                buffer.dumpf();
+            },
+            // Key::Char('\n') => {
+            //     buffer.append('E');
+            // },
             Key::Char(c) => {
                 buffer.append(c);
                 // buffer

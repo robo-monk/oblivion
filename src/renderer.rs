@@ -19,11 +19,13 @@ pub trait RendererInterface {
 
     fn write(&mut self, c: char, index: u32);
 
-    fn write_string(&mut self, s: String, index: u32);
+    fn write_string(&mut self, s: &String, index: u32);
 
     fn get_col_row_from_index(&self, index: u32) -> (u16, u16);
 
     fn clear(&mut self);
+
+    fn goto(&mut self, index: u32);
 }
 
 // #[derive(Debug)]
@@ -36,13 +38,18 @@ pub struct TermionRenderer {
 impl RendererInterface for TermionRenderer {
     fn get_col_row_from_index(&self, index: u32) -> (u16, u16) {
         let current_row = ((index / (self.width as u32)) + 1) as u16;
-        let current_col = ((index % (self.width as u32))) as u16;
+        let current_col = (index % (self.width as u32)) as u16;
         (current_col, current_row)
     }
 
+    fn goto(&mut self, index: u32) {
+        let (current_row, current_col) = self.get_col_row_from_index(index);
+
+        self.write_text(&format!("{}", cursor::Goto(current_row, current_col)), 0);
+    }
 
     fn clear(&mut self) {
-        self.write_string(format!("{}", clear::All), 0);
+        self.write_string(&format!("{}", clear::All), 0);
     }
 
     fn flush(&mut self) {
@@ -53,15 +60,14 @@ impl RendererInterface for TermionRenderer {
         self.write_text(&format!("{}", c), index)
     }
 
-    fn write_string(&mut self, s: String, index: u32) {
-        self.write_text(&s, index)
+    fn write_string(&mut self, s: &String, index: u32) {
+        self.write_text(s, index)
     }
 }
 
 impl TermionRenderer {
     pub fn new((width, height): (u16, u16)) -> Self {
         let stdout = stdout().into_raw_mode().unwrap();
-
 
         let mut renderer = Self {
             width,
@@ -77,15 +83,34 @@ impl TermionRenderer {
     }
 
     pub fn write_text(&mut self, text: &str, index: u32) {
-        let (current_row, current_col) = self.get_col_row_from_index(index);
+        // let (current_row, current_col) = self.get_col_row_from_index(index);
 
-        write!(
-            self.stdout,
-            "{}{}{}",
-            cursor::Goto(current_row, current_col),
-            text,
-            cursor::BlinkingBlock
-        )
-        .expect("Could not write to the screen!");
+        let lines = text.split("\n");
+        let mut i = index;
+        lines.for_each(|line| {
+            let (current_row, current_col) = self.get_col_row_from_index(i);
+
+            write!(
+                self.stdout,
+                "{}{}{}",
+                cursor::Goto(current_row, current_col),
+                line,
+                cursor::BlinkingBlock
+            )
+            .expect("Could not write to the screen!");
+
+
+            let remaidner = self.width - line.len() as u16;
+            i += line.len() as u32 + remaidner as u32;
+        });
+
+        // write!(
+        //     self.stdout,
+        //     "{}{}{}",
+        //     cursor::Goto(current_row, current_col),
+        //     text,
+        //     cursor::BlinkingBlock
+        // )
+        // .expect("Could not write to the screen!");
     }
 }
