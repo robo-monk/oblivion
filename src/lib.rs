@@ -3,7 +3,11 @@ pub mod mode;
 pub mod editor;
 pub mod renderer;
 
-pub use buffer::Buffer;
+pub use buffer::{
+    Buffer, BufferInterface
+};
 pub use editor::Editor;
-pub use renderer::Renderer;
+pub use renderer::{
+    RendererInterface, Renderer
+};
 pub use mode::{Mode, NormalMode, VisualMode, InsertMode};

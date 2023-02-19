@@ -3,15 +3,15 @@
 
 // use Buffer;
 
-use crate::Buffer;
+use crate::{Buffer, RendererInterface};
 
 // #[derive(Debug)]
-pub struct Editor {
-    buffers: Vec<Buffer>,
+pub struct Editor<'a> {
+    buffers: Vec<Buffer<'a>>,
     active_buffer: Option<usize>
 }
 
-impl Editor {
+impl Editor<'_> {
     pub fn new() -> Self {
         Editor {
             buffers: Vec::new(), 

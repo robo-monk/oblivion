@@ -1,4 +1,4 @@
-use crate::Buffer;
+use crate::{Buffer, buffer::BufferInterface};
 use termion::event::Key;
 
 struct InputEvent {
@@ -12,13 +12,13 @@ pub enum Mode {
 }
 
 trait ModeHandler {
-    fn handle_input(&mut self, input: InputEvent, buffer: &mut Buffer);
+    fn handle_input(&mut self, input: InputEvent, buffer: &mut dyn BufferInterface);
 }
 
 pub struct NormalMode {}
 
 impl ModeHandler for NormalMode {
-    fn handle_input(&mut self, input: InputEvent, buffer: &mut Buffer) {
+    fn handle_input(&mut self, input: InputEvent, buffer: &mut dyn BufferInterface) {
         // let k = input.key;
 
         // match input.key {

@@ -1,37 +1,40 @@
-use crate::Renderer;
+use crate::{Renderer, RendererInterface};
 use std::fs;
 use std::io::{stdin, stdout, Write};
 
+pub trait BufferInterface {
+    fn append(&mut self, c: char);
+}
+
 // #[derive(Debug)]
-pub struct Buffer {
+pub struct Buffer<'a> {
     filename: String,
     contents: String,
     modified: bool,
 
-    renderer: Renderer,
-    index: u32
-
-    // width: u16,
-    // height: u16,
+    renderer: &'a dyn RendererInterface,
+    index: u32, // width: u16,
+                // height: u16,
 }
 
-impl Buffer {
-    pub fn new(filename: String, renderer: Renderer) -> Buffer {
-        let contents = fs::read_to_string(filename.to_owned())
-                        .expect("Unable to read file");
+impl Buffer<'_> {
+    pub fn new(filename: String, renderer: &dyn RendererInterface) -> Buffer {
+        let contents = fs::read_to_string(filename.to_owned()).expect("Unable to read file");
+        // let test = Box::new(renderer);
 
         Buffer {
             filename,
             contents,
             modified: false,
             renderer,
-            index: 0
-            // width,
-            // height,
+            index: 0, // width,
+                      // height,
         }
     }
+}
 
-    pub fn append(&mut self, c: char) {
+impl BufferInterface for Buffer<'_> {
+    fn append(&mut self, c: char) {
         // self.contents += c;
         self.contents.push(c);
         self.index += 1;

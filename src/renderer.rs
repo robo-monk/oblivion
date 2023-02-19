@@ -12,7 +12,9 @@ pub enum Renderer {
     Terminal(TermionRenderer),
 }
 
-trait RendererInterface {
+// pub struct Renderer {}
+
+pub trait RendererInterface {
     fn flush(&mut self);
 
     fn write(&mut self, c: char);
@@ -23,25 +25,6 @@ pub struct TermionRenderer {
     width: u16,
     height: u16,
     stdout: RawTerminal<Stdout>,
-}
-
-impl TermionRenderer {
-    pub fn new((width, height): (u16, u16)) -> Self {
-        let mut stdout = stdout().into_raw_mode().unwrap();
-
-        write!(
-            stdout,
-            "{}{}q to exit. Type stuff, use alt, and so on...{}",
-            clear::All,
-            cursor::Goto(1, 1),
-            cursor::BlinkingBlock
-        );
-        Self {
-            width,
-            height,
-            stdout,
-        }
-    }
 }
 
 impl RendererInterface for TermionRenderer {
@@ -63,4 +46,38 @@ impl RendererInterface for TermionRenderer {
     }
 }
 
-// impl Debug for TermionRenderer {}
+impl TermionRenderer {
+    pub fn new((width, height): (u16, u16)) -> Self {
+        let mut stdout = stdout().into_raw_mode().unwrap();
+
+        write!(
+            stdout,
+            "{}{}q to exit. Type stuff, use alt, and so on...{}",
+            clear::All,
+            cursor::Goto(1, 1),
+            cursor::BlinkingBlock
+        );
+        Self {
+            width,
+            height,
+            stdout,
+        }
+    }
+
+    pub fn flush(&mut self) {
+        self.stdout.flush().unwrap();
+    }
+
+    pub fn write(&mut self, c: char) {
+        let current_row = 1;
+        let current_col = 1;
+
+        write!(
+            self.stdout,
+            "{}{}{}",
+            cursor::Goto(current_row, current_col),
+            c,
+            cursor::BlinkingBlock
+        );
+    }
+}

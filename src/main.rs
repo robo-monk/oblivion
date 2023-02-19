@@ -7,7 +7,7 @@ use termion::input::TermRead;
 use termion::raw::IntoRawMode;
 use termion::{clear, color, cursor, style, terminal_size};
 
-use oblivion::{Buffer, Editor, InsertMode, Mode, NormalMode, VisualMode, Renderer};
+use oblivion::{Buffer, Editor, InsertMode, Mode, NormalMode, VisualMode, Renderer, BufferInterface};
 
 fn main() {
     let stdin = stdin();
@@ -34,9 +34,15 @@ fn main() {
 
     // let editor = Editor::new();
 // terminal_size().unwrap()
-    let buffer = Buffer::new(String::from("./src/main.rs"), Renderer::Terminal(
-        TermionRenderer::new(terminal_size().unwrap())
-    ));
+    // let renderer = Renderer::Terminal(
+    //     TermionRenderer::new(terminal_size().unwrap())
+    // );
+
+    let renderer = TermionRenderer::new(terminal_size().unwrap());
+    // renderer;
+    // let mut buffer = Buffer::new(String::from("./src/main.rs"), Renderer::Terminal(renderer));
+    // let mut buffer = Buffer::new(String::from("./src/main.rs"), Renderer::Terminal(renderer));
+    let mut buffer = Buffer::new(String::from("./src/main.rs"), &renderer);
     // println!("{:?}", buffer);
 
     // write!(stdout, "{}", cursor::BlinkingBlock);
@@ -45,21 +51,25 @@ fn main() {
         match k.unwrap() {
             Key::Char('q') => break,
             Key::Char(c) => {
-                current_row += 1;
-                if current_row >= max_width {
-                    current_row = 1;
-                    current_col += 1;
-                }
+                buffer.append(c);
+                // buffer
+                // buffer.append(c);
+                // renderer.
+                // current_row += 1;
+                // if current_row >= max_width {
+                //     current_row = 1;
+                //     current_col += 1;
+                // }
 
                 // println!("{}", c);
 
-                write!(
-                    stdout,
-                    "{}{}{}",
-                    cursor::Goto(current_row, current_col),
-                    c,
-                    cursor::BlinkingBlock
-                );
+                // write!(
+                //     stdout,
+                //     "{}{}{}",
+                //     cursor::Goto(current_row, current_col),
+                //     c,
+                //     cursor::BlinkingBlock
+                // );
                 // stdout.flush().unwrap();
             }
             _ => {}
