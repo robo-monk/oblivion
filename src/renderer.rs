@@ -22,6 +22,8 @@ pub trait RendererInterface {
     fn write_string(&mut self, s: String, index: u32);
 
     fn get_col_row_from_index(&self, index: u32) -> (u16, u16);
+
+    fn clear(&mut self);
 }
 
 // #[derive(Debug)]
@@ -33,9 +35,14 @@ pub struct TermionRenderer {
 
 impl RendererInterface for TermionRenderer {
     fn get_col_row_from_index(&self, index: u32) -> (u16, u16) {
-        let current_col = ((index / (self.width as u32)) + 1) as u16;
-        let current_row = ((index % (self.width as u32)) + 1) as u16;
+        let current_row = ((index / (self.width as u32)) + 1) as u16;
+        let current_col = ((index % (self.width as u32))) as u16;
         (current_col, current_row)
+    }
+
+
+    fn clear(&mut self) {
+        self.write_string(format!("{}", clear::All), 0);
     }
 
     fn flush(&mut self) {
@@ -53,28 +60,24 @@ impl RendererInterface for TermionRenderer {
 
 impl TermionRenderer {
     pub fn new((width, height): (u16, u16)) -> Self {
-        let mut stdout = stdout().into_raw_mode().unwrap();
+        let stdout = stdout().into_raw_mode().unwrap();
 
-        // write!(
-        //     stdout,
-        //     "{}{}qq to exit. Type stuff, use alt, and so on...{}",
-        //     clear::All,
-        //     cursor::Goto(1, 1),
-        //     cursor::BlinkingBlock
-        // );
-        let renderer = Self {
+
+        let mut renderer = Self {
             width,
             height,
             stdout,
         };
 
-        // renderer.write()
+        renderer.clear();
+        renderer.write_text("> Welcome to your oblivion Buffer. Press q to exit", 0);
+        renderer.flush();
 
         renderer
     }
 
     pub fn write_text(&mut self, text: &str, index: u32) {
-        let (current_col, current_row) = self.get_col_row_from_index(index);
+        let (current_row, current_col) = self.get_col_row_from_index(index);
 
         write!(
             self.stdout,
@@ -85,21 +88,4 @@ impl TermionRenderer {
         )
         .expect("Could not write to the screen!");
     }
-
-    // pub fn flush(&mut self) {
-    //     self.stdout.flush().unwrap();
-    // }
-
-    // pub fn write(&mut self, c: char, index: u32) {
-    //     let current_row = 1;
-    //     let current_col = 1;
-
-    //     write!(
-    //         self.stdout,
-    //         "{}{}{}",
-    //         cursor::Goto(current_row, current_col),
-    //         c,
-    //         cursor::BlinkingBlock
-    //     );
-    // }
 }
